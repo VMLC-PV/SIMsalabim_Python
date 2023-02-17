@@ -12,7 +12,6 @@ Codes can be ran on Windows and Linux. However, the running simulations in paral
 ## Repository Folder Structure
     .
     ├── Main                                    # Main directory, place Notebooks here to run them
-        ├── Dev_files                           # Directory for development files
         ├── Notebooks                           # Contains clean versions of the Notebooks, Notebooks need to be moved to the main directory to be used
         ├── SIMsalabim_utils                    # Contains main custom packages and functions
         ├── Simulation_program                  # Place SIMsalabim folders here
