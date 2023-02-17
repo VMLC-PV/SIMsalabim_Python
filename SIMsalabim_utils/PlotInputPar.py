@@ -9,8 +9,8 @@ from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import numpy as np
 # Import homemade package by VLC
-from VLC_units.ManagePlotInputFile.MakeDevParFile import *
-from VLC_units.ManagePlotInputFile.GetInputPar import *
+from SIMsalabim_utils.MakeDevParFile import *
+from SIMsalabim_utils.GetInputPar import *
 
 def plot_input_mob(ParFileDic,ax,x_unit='nm',y_unit='m'):
     """Plot the input mobility from the device_parameters.txt
@@ -295,17 +295,17 @@ def plot_input_nrj_diag(ParFileDic,ax,x_unit='nm'):
     
 
     if float(ParFileDic['Bulk_tr']) > 0:
-        EtrapSingle = -float(ParFileDic['EtrapSingle'])
+        ETrapSingle = -float(ParFileDic['ETrapSingle'])
         if int(ParFileDic['TLsTrap']) == 1:
-            ax.plot([0,L],[EtrapSingle,EtrapSingle ], color = 'k', linestyle='dashed')
+            ax.plot([0,L],[ETrapSingle,ETrapSingle ], color = 'k', linestyle='dashed')
         else:
-            ax.plot([L_LTL,Lac+L_LTL],[EtrapSingle,EtrapSingle ], color = 'k',linestyle='dashed')
+            ax.plot([L_LTL,Lac+L_LTL],[ETrapSingle,ETrapSingle ], color = 'k',linestyle='dashed')
     if float(ParFileDic['St_L']) > 0:
-        EtrapSingle = -float(ParFileDic['EtrapSingle'])
-        ax.plot([L_LTL],[EtrapSingle], color = 'k', marker="x", markersize=10)
+        ETrapSingle = -float(ParFileDic['ETrapSingle'])
+        ax.plot([L_LTL],[ETrapSingle], color = 'k', marker="x", markersize=10)
     if float(ParFileDic['St_R']) > 0:
-        EtrapSingle = -float(ParFileDic['EtrapSingle'])
-        ax.plot([L_LTL+Lac],[EtrapSingle], color = 'k', marker="x", markersize=10)
+        ETrapSingle = -float(ParFileDic['ETrapSingle'])
+        ax.plot([L_LTL+Lac],[ETrapSingle], color = 'k', marker="x", markersize=10)
         
 
 

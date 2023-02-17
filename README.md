@@ -20,7 +20,12 @@ Codes can be ran on Windows and Linux. However, the running simulations in paral
 
 ## Necessary installs
 ### SIMsalabim
-All the details to install SIMsalabim are detailed in the [GitHub repository](https://github.com/kostergroup/SIMsalabim). To make sure that you are running the latest version of SIMsalabim, check regularly the repository.
+All the details to install SIMsalabim are detailed in the [GitHub repository](https://github.com/kostergroup/SIMsalabim). To make sure that you are running the latest version of SIMsalabim, check regularly the repository.\
+You can also run the Download_SIMsalabim.py script in the Main folder to download the latest version of SIMsalabim.\
+
+### Python packages
+
+
 
 ### Parallel simulations
 On Linux, you have the option to run the simulations in parallel. Sadly, not on windows (yet).

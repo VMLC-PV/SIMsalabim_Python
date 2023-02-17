@@ -11,3 +11,7 @@
 *.gif
 *SIMsalabim
 *.pyc
+*.ipynb
+
+# Exceptions
+!Notebooks/

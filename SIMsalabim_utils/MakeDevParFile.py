@@ -45,8 +45,9 @@ def MakeDevParFileCopy(path2file,path2file_copy):
     """    
     shutil.copyfile(path2file,path2file_copy)
 
-def UpdateDevParFilev433(ParFileDic,path2file,MakeCopy=True):
+def UpdateDevParFile(ParFileDic,path2file,MakeCopy=True):
     """Update the device_parameters.txt with the values contained in ParFileDic
+    Has to be used with SIMsalabim v4.33 or higher
 
     Parameters
     ----------
