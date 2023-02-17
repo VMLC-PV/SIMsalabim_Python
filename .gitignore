@@ -14,4 +14,4 @@
 *.ipynb
 
 # Exceptions
-!Notebooks/
+!Notebooks/*.ipynb
