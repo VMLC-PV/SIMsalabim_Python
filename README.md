@@ -13,33 +13,19 @@ Codes can be ran on Windows and Linux. However, the running simulations in paral
     .
     ├── Main                                    # Main directory, place Notebooks here to run them
         ├── Dev_files                           # Directory for development files
-        ├── bayesim                             # Directory with the modified Bayesim package from https://github.com/PV-Lab/bayesim
-        ├── imeet                               # Directory with the imeet python package
         ├── Notebooks                           # Contains clean versions of the Notebooks, Notebooks need to be moved to the main directory to be used
-        ├── VLC_units                           # Contains main custom packages and functions
+        ├── SIMsalabim_utils                    # Contains main custom packages and functions
         ├── Simulation_program                  # Place SIMsalabim folders here
-            ├── SIMsalabim                      # Contains simulation program folders from https://github.com/kostergroup/SIMsalabim
-        ├── Dev_files                           # Code currently in development
+        ├── SIMsalabim                          # Place SIMsalabim folders here, Get SIMsalabim from https://github.com/kostergroup/SIMsalabim
     └── README.md
 
 ## Necessary installs
 ### SIMsalabim
 All the details to install SIMsalabim are detailed in the [GitHub repository](https://github.com/kostergroup/SIMsalabim). To make sure that you are running the latest version of SIMsalabim, check regularly the repository.
 
-### Bayesim
-The Bayesim package in the repository is a modified version of the original package from [Bayesim GitHub repository](https://github.com/PV-Lab/bayesim). All the details to install bayesim or to get some tutorials are detailed on the [Bayesim website](https://pv-lab.github.io/bayesim/_build/html/index.html#).
-Note that none of the method related to the baysian inference and subdivision were modified from the original package.\
-The modifications are:
-- updated the export function for .h5 files to make it compatible with newer python versions.
-- added a new function to calculate the physical hyperparameters.
-- modified the code to interface properly with the output from [SIMsalabim](https://github.com/kostergroup/SIMsalabim).
-
-If bayesim is used, one should cite the following [paper](https://doi.org/10.1016/j.cpc.2019.01.022):\
-R. Kurchin, G. Romano, and T. Buonassisi, “Bayesim: A tool for adaptive grid model fitting with Bayesian inference", Comput. Phys. Commun., vol. 239, pp. 161–165, 2019. 
-
 ### Parallel simulations
-On Linux, you have the option to run the simulations in parrallel. Sadly, not on windows (yet).
-To be able to run simulations in parrallel efficiently and with any threading or multiprocessing from python we use the `parallel` from the [GNU prallel](https://www.gnu.org/software/parallel/) project.
+On Linux, you have the option to run the simulations in parallel. Sadly, not on windows (yet).
+To be able to run simulations in parallel efficiently and with any threading or multiprocessing from python we use the `parallel` from the [GNU prallel](https://www.gnu.org/software/parallel/) project.
 To install on linux run:
 ```
 sudo apt update
