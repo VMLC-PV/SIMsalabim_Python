@@ -1,0 +1,7 @@
+Data in the folder was taken from:
+
+Dingqin Hu, Qianguang Yang, Haiyan Chen, Friso Wobben, Vincent M. Le Corre, Ranbir Singh, Hua Tang, L. Jan Anton Koster, Tainan Duan, Zhipeng Kan, Zeyun Xiao, and Shirong Lu, 
+15.34% Efficiency All-Small-Molecule Organic Solar Cells with Improved Fill Factor Enabled by a Fullerene Additive,
+Energy & Environmental Science, 2020, 13, 2134-2141 
+
+DOI: https://doi.org/10.1039/D0EE00714E
