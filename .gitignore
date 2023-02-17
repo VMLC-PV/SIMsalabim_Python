@@ -15,4 +15,5 @@
 
 # Exceptions
 !Notebooks/*.ipynb
-!Example Data/OPV_Example/EES_Data/*txt
+!Example Data/OPV_Examples/EES_Data/*txt
+!Example Data/Perovskite_Examples/Solar_RRL_Data/*dat
