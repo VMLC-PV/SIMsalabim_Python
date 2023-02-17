@@ -1,27 +1,19 @@
 ######################################################################
-#################### Plot function SIMsalabim ########################
+#################### Plot functions SIMsalabim #######################
 ######################################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
+import itertools,os
 import numpy as np
 import pandas as pd
 import matplotlib as mp
 import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
 from matplotlib.lines import Line2D
-from scipy import stats,optimize,constants
-import warnings,sys,itertools,os
-# package by VLC
-from VLC_units.ManagePlotInputFile.GetInputPar import ReadParameterFile
-# import VLC_units.PlotSimuOutput.plot_settings_screen
-
-# Don't show warnings
-warnings.filterwarnings("ignore")
-## Physics constants
-q = constants.value(u'elementary charge')
-eps_0 = constants.value(u'electric constant')
-kb = constants.value(u'Boltzmann constant in eV/K')
-
+# Import SIMsalabim_utils
+from SIMsalabim_utils.GetInputPar import ReadParameterFile
 
 
 def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Jext'],xlimits=[],ylimits=[],x_unit='V',y_unit='A/m^2',absx=False,absy=False,plot_type=0,line_type = ['-'],mark='',legend=True,save_fig=False,fig_name='JV.jpg',verbose=True):
@@ -744,6 +736,9 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
     else:
         if verbose:
             print('Line color is set with Var_file name.')
+    
+    plt.figure(num_fig)
+    ax_Vars_plot = plt.axes()
 
     for Var,lab,c in zip(Var_files,labels,itertools.cycle(colors)):
             
@@ -783,9 +778,7 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
             if verbose:
                 print('Wrong colorbar_type input')
 
-        plt.figure(num_fig)
-        ax_Vars_plot = plt.axes()
-
+        
         for V in Vext:
             data_Var_dum = data_Var[abs(data_Var.Vext -V) == min(abs(data_Var.Vext -V))]
             data_Var_dum = data_Var_dum.reset_index(drop=True)
@@ -833,7 +826,7 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
     # legend
     if legend == True:
         if not ((colorbar_type == 'log' or colorbar_type == 'lin') and colorbar_display):
-            first_legend = plt.legend(loc='lower center',frameon=False)
+            first_legend = plt.legend(loc='upper center',frameon=False)
             plt.gca().add_artist(first_legend)  
         # plt.legend(handles=[line2], loc='lower right')
         legend_elements = []
@@ -846,7 +839,7 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
         if 'pion' in y:
             legend_elements.append(Line2D([0], [0], color='k', label='Cation',linestyle=line_type[int(y.index('CNI'))]))
 
-        plt.legend(handles=legend_elements,loc='upper center',frameon=False,ncol = 2)
+        plt.legend(handles=legend_elements,loc='lower center',frameon=False,ncol = 2)
     plt.xlabel(xaxis_label)
     plt.ylabel(yaxis_label)
 

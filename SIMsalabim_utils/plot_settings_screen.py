@@ -1,3 +1,10 @@
+######################################################################
+#################### Default Settings matplotlib #####################
+######################################################################
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import matplotlib as mpl
 import matplotlib.pyplot as plt 
 
@@ -22,12 +29,7 @@ plt.rc('ytick.minor', size=line_thickness * 2.5, width=line_thickness)
 plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 plt.rc('figure', titlesize=5)  # fontsize of the figure title
 plt.rc('lines', linewidth=3)
- 
+#set figure size
+plt.rcParams['figure.figsize'] = [12, 10]
 params = {'mathtext.default': 'regular' }          
 plt.rcParams.update(params)
-
-# mngr = plt.get_current_fig_manager()
-# # to put it into the upper left corner for example:
-# mngr.window.setGeometry(50,50,1600, 1200)
-# fm = plt.get_current_fig_manager()
-# fm.window.wm_geometry("+500+0")

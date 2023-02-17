@@ -1,22 +1,20 @@
 ######################################################################
-############### Function to run simulation code ######################
+############### Functions to run simulation code #####################
 ######################################################################
-# by Vincent M. Le Corre
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
 # Package import
+# import subprocess,shutil,os,tqdm,parmap,multiprocessing,random,sys,platform,itertools,shutil,uuid,warnings
+import subprocess,shutil,os,parmap,sys,platform,itertools,shutil,uuid
 import numpy as np
 import pandas as pd
 import matplotlib as mp
 import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
-from scipy import stats,optimize,constants
-import subprocess,shutil,os,glob,tqdm,parmap,multiprocessing,random,sys,platform,itertools,shutil,uuid
-from itertools import repeat
-import warnings
-import sys
-# package by VLC
-from VLC_units.Simulation.CompileProg import *
-# Don't show warnings
-warnings.filterwarnings("ignore")
+# Import SIMsalabim_utils
+from SIMsalabim_utils.CompileProg import *
+
 
 
 def run_code(name_prog,path2prog,str2run='',show_term_output=False,verbose=False):
@@ -67,9 +65,16 @@ def run_code(name_prog,path2prog,str2run='',show_term_output=False,verbose=False
             fpc_prog(name_prog,path2prog,show_term_output=False,force_fpc=False,verbose=verbose)
     try:
         subprocess.check_call(cmd_list.split(), encoding='utf8', stdout=output_direct, cwd=path2prog, shell=is_windows)
-    except subprocess.CalledProcessError:
-        print(path2prog)
-        raise ChildProcessError
+    except subprocess.CalledProcessError as e:
+        #don't stop if error code is 95
+        if e.returncode == 95:
+            # error coed 95 is a warning that at least one point did not converge
+            if verbose:
+                print("Error code 95")
+        else:
+            raise e
+        # print(path2prog)
+        # raise ChildProcessError
         
     os.chdir(curr_dir)                          # Change directory back to original directory
 
@@ -130,7 +135,7 @@ def run_parallel_simu(code_name_lst,path_lst,str_lst,max_jobs=max(1,os.cpu_count
         Number of threads used to run the simulations, by default os.cpu_count()-1
     """
     
-    # str_lst,output_files,Var_files,scPars_files,code_name_lst,path_lst,labels = Simulation_Inputs
+    # str_lst,JV_files,Var_files,scPars_files,code_name_lst,path_lst,labels = Simulation_Inputs
     path2prog = path_lst[0]
     
     filename = 'Str4Parallel_'+str(uuid.uuid4())+'.txt'
@@ -143,8 +148,27 @@ def run_parallel_simu(code_name_lst,path_lst,str_lst,max_jobs=max(1,os.cpu_count
     tempfilepar.close()
     curr_dir = os.getcwd()                      # Get current directory
     # os.chdir(path2prog)                         # Change directory to working directory
-    cmd_str = 'parallel --jobs '+str(int(max_jobs))+' --bar -a '+os.path.join(path2prog,filename)
-    subprocess.check_call( cmd_str.split() , encoding='utf8', cwd=path2prog, stdout=verbose)
+    log_file = os.path.join(path2prog,'logjob_'+str(uuid.uuid4()) + '.dat')
+    cmd_str = 'parallel --joblog '+ log_file +' --jobs '+str(int(max_jobs))+' --bar -a '+os.path.join(path2prog,filename)
+    try:
+        subprocess.check_call(cmd_str.split(), encoding='utf8', cwd=path2prog, stdout=verbose)
+    except subprocess.CalledProcessError as e:
+        #don't stop if error code is 95
+        if e.returncode != 0:
+            log = pd.read_csv(log_file,sep='\t',usecols=['Exitval'],error_bad_lines=False)#on_bad_lines=warn)
+            if log['Exitval'].isin([0, 95]).all():
+                os.remove(log_file)
+                if verbose:
+                    print("Error code 95")
+            else:
+                print(log['Exitval'])
+                raise e
+            
+            
+        # check if all errors are either 95 or 0
+            
+
+    # subprocess.check_call( cmd_str.split() , encoding='utf8', cwd=path2prog, stdout=verbose)
     # os.chdir(curr_dir)                          # Change directory back to original directory
 
 
@@ -163,10 +187,10 @@ def RunSimulation(Simulation_Inputs,max_jobs=os.cpu_count()-2 ,do_multiprocessin
     verbose : bool, optional
         Display text message, by default False
     """    
-    str_lst,output_files,Var_files,scPars_files,code_name_lst,path_lst,labels = Simulation_Inputs
+    str_lst,JV_files,Var_files,scPars_files,code_name_lst,path_lst,labels = Simulation_Inputs
     
     # Check if parallel is available
-    if shutil.which('parallel') == None:
+    if do_multiprocessing and (shutil.which('parallel') == None):
         do_multiprocessing = False
         if verbose:
             print('GNU Parallel not found, running simulations sequentially')
@@ -207,7 +231,7 @@ def PrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS
     -------
     list
         list of lists containing the command strings to run the simulations, the output files and the fixed parameters
-        str_lst, output_files, Var_files, scPars_files, code_name_lst, path_lst, labels
+        str_lst, JV_files, Var_files, scPars_files, code_name_lst, path_lst, labels
     """    
     ## Prepare strings to run
     # Fixed string
@@ -221,18 +245,11 @@ def PrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS
         if verbose:
             print('No parameters list was given, using default value')
         parameters = []
-        parameters.append({'name':'Gfrac','values':[1]})
+        parameters.append({'name':'Gfrac','values':[0]})
 
-    # check for CodeName
-    if CodeName.lower() == 'simss':
-        out_files = '-JV_file '
-        out = 'JV'
-    elif CodeName.lower() == 'zimt':
-        out_files = '-tj_file '
-        out = 'tj'
-
+    
     # Initialize     
-    str_lst,output_files,Var_files,scPars_files,code_name_lst,path_lst,labels,val,nam = [],[],[],[],[],[],[],[],[]
+    str_lst,JV_files,Var_files,scPars_files,code_name_lst,path_lst,labels,val,nam = [],[],[],[],[],[],[],[],[]
 
     if len(parameters) > 1:
         for param in parameters: # initalize lists of values and names
@@ -243,17 +260,17 @@ def PrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS
         for i in list(itertools.product(*val)): # iterate over all combinations of parameters
             str_line = ''
             lab = ''
-            out_name = out
+            JV_name = 'JV'
             Var_name = 'Var'
             scPars_name = 'scPars'
             for j,name in zip(i,nam):
                 str_line = str_line +'-'+name+' {:.2e} '.format(j)
                 lab = lab+name+' {:.2e} '.format(j)
-                out_name = out_name +'_'+name +'_{:.2e}'.format(j)
+                JV_name = JV_name +'_'+name +'_{:.2e}'.format(j)
                 Var_name = Var_name +'_'+ name +'_{:.2e}'.format(j)
                 scPars_name = scPars_name +'_'+ name +'_{:.2e}'.format(j)
-            str_lst.append(fixed_str+ ' ' +str_line+ out_files +out_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
-            output_files.append(os.path.join(Path2Simu , str(out_name+ '.dat')))
+            str_lst.append(fixed_str+ ' ' +str_line+ '-JV_file '+JV_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
+            JV_files.append(os.path.join(Path2Simu , str(JV_name+ '.dat')))
             Var_files.append(os.path.join(Path2Simu , str(Var_name+ '.dat')))
             scPars_files.append(os.path.join(Path2Simu , str(scPars_name+ '.dat')))
             code_name_lst.append(CodeName)
@@ -261,21 +278,26 @@ def PrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS
             labels.append(lab)
             idx += 1
     elif len(parameters) == 1:
+        # str_line = ''
+        # lab = ''
+        # JV_name = 'JV'
+        # Var_name = 'Var'
+        # scPars_name = 'scPars'
         name = parameters[0]['name']
         idx = 0
         for j in parameters[0]['values']:
             str_line = ''
             lab = ''
-            out_name = out
+            JV_name = 'JV'
             Var_name = 'Var'
             scPars_name = 'scPars'
             str_line = '-'+name+' {:.2e} '.format(j)
             lab = name+' {:.2e} '.format(j)
-            out_name = out_name +'_'+name +'_{:.2e}'.format(j)
+            JV_name = JV_name +'_'+name +'_{:.2e}'.format(j)
             Var_name = Var_name +'_'+ name +'_{:.2e}'.format(j)
             scPars_name = scPars_name +'_'+ name +'_{:.2e}'.format(j)
-            str_lst.append(fixed_str+ ' ' +str_line+ out_files +out_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
-            output_files.append(os.path.join(Path2Simu , str(out_name+ '.dat')))
+            str_lst.append(fixed_str+ ' ' +str_line+ '-JV_file '+JV_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
+            JV_files.append(os.path.join(Path2Simu , str(JV_name+ '.dat')))
             Var_files.append(os.path.join(Path2Simu , str(Var_name+ '.dat')))
             scPars_files.append(os.path.join(Path2Simu , str(scPars_name+ '.dat')))
             code_name_lst.append(CodeName)
@@ -286,8 +308,8 @@ def PrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS
             idx += 1
     else:
         print('No parameters given')
-        str_lst.append(fixed_str+' ' +out_files+out+'.dat -Var_file Var.dat -scPars_file scPars.dat')# -ExpJV '+JVexp_lst[idx])
-        output_files.append(os.path.join(Path2Simu , str(out+'.dat')))
+        str_lst.append(fixed_str+ ' -JV_file JV.dat -Var_file Var.dat -scPars_file scPars.dat')# -ExpJV '+JVexp_lst[idx])
+        JV_files.append(os.path.join(Path2Simu , str('JV.dat')))
         Var_files.append(os.path.join(Path2Simu , str('Var.dat')))
         scPars_files.append(os.path.join(Path2Simu , str('scPars.dat')))
         code_name_lst.append(CodeName)
@@ -296,7 +318,7 @@ def PrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS
 
 
     
-    return str_lst,output_files,Var_files,scPars_files,code_name_lst,path_lst,labels
+    return str_lst,JV_files,Var_files,scPars_files,code_name_lst,path_lst,labels
 
 def  DegradationPrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeName = 'SimSS',verbose=False):
     """Prepare the command strings to run and the fixed parameters and output files
@@ -320,7 +342,7 @@ def  DegradationPrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeN
     -------
     list
         list of lists containing the command strings to run the simulations, the output files and the fixed parameters
-        str_lst, output_files, Var_files, scPars_files, code_name_lst, path_lst, labels
+        str_lst, JV_files, Var_files, scPars_files, code_name_lst, path_lst, labels
     """    
     ## Prepare strings to run
     # Fixed string
@@ -336,16 +358,9 @@ def  DegradationPrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeN
         parameters = []
         parameters.append({'name':'Gfrac','values':[0]})
 
-    # check for CodeName
-    if CodeName.lower() == 'simss':
-        out_files = '-JV_file '
-        out = 'JV'
-    elif CodeName.lower() == 'zimt':
-        out_files = '-tj_file '
-        out = 'tj'
     
     # Initialize     
-    str_lst,output_files,Var_files,scPars_files,code_name_lst,path_lst,labels,val,nam = [],[],[],[],[],[],[],[],[]
+    str_lst,JV_files,Var_files,scPars_files,code_name_lst,path_lst,labels,val,nam = [],[],[],[],[],[],[],[],[]
     names = []
 
     if len(parameters) > 1:
@@ -362,17 +377,17 @@ def  DegradationPrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeN
         for index, row in param2run.iterrows():
             str_line = ''
             lab = ''
-            out_name = out
+            JV_name = 'JV'
             Var_name = 'Var'
             scPars_name = 'scPars'
             for name in param2run.columns:
                 str_line = str_line +'-'+name+' {:.2e} '.format(row[name])
                 lab = lab+name+' {:.2e} '.format(row[name])
-                out_name = out_name +'_'+name +'_{:.2e}'.format(row[name])
+                JV_name = JV_name +'_'+name +'_{:.2e}'.format(row[name])
                 Var_name = Var_name +'_'+ name +'_{:.2e}'.format(row[name])
                 scPars_name = scPars_name +'_'+ name +'_{:.2e}'.format(row[name])
-            str_lst.append(fixed_str+ ' ' +str_line+ out_files+out_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
-            output_files.append(os.path.join(Path2Simu , str(out_name+ '.dat')))
+            str_lst.append(fixed_str+ ' ' +str_line+ '-JV_file '+JV_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
+            JV_files.append(os.path.join(Path2Simu , str(JV_name+ '.dat')))
             Var_files.append(os.path.join(Path2Simu , str(Var_name+ '.dat')))
             scPars_files.append(os.path.join(Path2Simu , str(scPars_name+ '.dat')))
             code_name_lst.append(CodeName)
@@ -380,21 +395,26 @@ def  DegradationPrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeN
             labels.append(lab)
             idx += 1
     elif len(parameters) == 1:
+        # str_line = ''
+        # lab = ''
+        # JV_name = 'JV'
+        # Var_name = 'Var'
+        # scPars_name = 'scPars'
         name = parameters[0]['name']
         idx = 0
         for j in parameters[0]['values']:
             str_line = ''
             lab = ''
-            out_name = out
+            JV_name = 'JV'
             Var_name = 'Var'
             scPars_name = 'scPars'
             str_line = '-'+name+' {:.2e} '.format(j)
             lab = name+' {:.2e} '.format(j)
-            out_name = out_name +'_'+name +'_{:.2e}'.format(j)
+            JV_name = JV_name +'_'+name +'_{:.2e}'.format(j)
             Var_name = Var_name +'_'+ name +'_{:.2e}'.format(j)
             scPars_name = scPars_name +'_'+ name +'_{:.2e}'.format(j)
-            str_lst.append(fixed_str+ ' ' +str_line+ out_files+out_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
-            output_files.append(os.path.join(Path2Simu , str(out_name+ '.dat')))
+            str_lst.append(fixed_str+ ' ' +str_line+ '-JV_file '+JV_name+ '.dat -Var_file '+Var_name+'.dat -scPars_file '+scPars_name+'.dat')# -ExpJV '+JVexp_lst[idx])
+            JV_files.append(os.path.join(Path2Simu , str(JV_name+ '.dat')))
             Var_files.append(os.path.join(Path2Simu , str(Var_name+ '.dat')))
             scPars_files.append(os.path.join(Path2Simu , str(scPars_name+ '.dat')))
             code_name_lst.append(CodeName)
@@ -403,14 +423,14 @@ def  DegradationPrepareSimuInputs(Path2Simu,parameters=None,fixed_str=None,CodeN
     else:
         print('No parameters given')
         str_lst.append(fixed_str+ ' -JV_file JV.dat -Var_file Var.dat -scPars_file scPars.dat')# -ExpJV '+JVexp_lst[idx])
-        output_files.append(os.path.join(Path2Simu , str('JV.dat')))
+        JV_files.append(os.path.join(Path2Simu , str('JV.dat')))
         Var_files.append(os.path.join(Path2Simu , str('Var.dat')))
         scPars_files.append(os.path.join(Path2Simu , str('scPars.dat')))
         code_name_lst.append(CodeName)
         path_lst.append(Path2Simu)
         labels.append('Simulation')
 
-    return str_lst,output_files,Var_files,scPars_files,code_name_lst,path_lst,labels
+    return str_lst,JV_files,Var_files,scPars_files,code_name_lst,path_lst,labels
 
 # if __name__ == '__main__':
     

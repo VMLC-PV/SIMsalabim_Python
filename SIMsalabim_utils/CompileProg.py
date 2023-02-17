@@ -1,10 +1,12 @@
 #########################################################
 ############### Compile program with fpc ################
 #########################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import os,subprocess,platform
-from pathlib import Path
+
 def fpc_prog(prog_name,path2prog,show_term_output=True,force_fpc=True,verbose=True):
     """Compile program using fpc
 

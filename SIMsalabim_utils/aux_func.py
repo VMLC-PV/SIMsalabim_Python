@@ -1,11 +1,13 @@
 ###################################################
 ############### Useful function ###################
 ###################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import numpy as np
 import pandas as pd
-from scipy import stats,optimize,constants
+from scipy import stats,constants
 
 ## Physics constants
 q = constants.value(u'elementary charge')

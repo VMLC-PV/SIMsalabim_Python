@@ -1,19 +1,18 @@
 #####################################################################
-###################### Plot function ZimT ###########################
+###################### Plot functions ZimT ###########################
 #####################################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
+import math,sys
 import numpy as np
 import pandas as pd
 import matplotlib as mp
 import matplotlib.pyplot as plt
 from matplotlib.legend import Legend
-from scipy import stats,optimize,constants
-import warnings
-import sys
-import plot_settings_screen
-# Don't show warnings
-warnings.filterwarnings("ignore")
+from scipy import constants
+
 ## Physics constants
 q = constants.value(u'elementary charge')
 eps_0 = constants.value(u'electric constant')

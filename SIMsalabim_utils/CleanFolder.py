@@ -1,7 +1,12 @@
 ######################################################################
 ####################### Cleaning output files ########################
 ######################################################################
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import os,subprocess
+
 def clean_up_output(filename_start,path):
     """Delete output files from the simulation
 
@@ -41,3 +46,20 @@ def Store_output_in_folder(filenames,folder_name,path):
             os.replace(os.path.join(path,i),os.path.join(path,folder_name,i))
         else:
             print('File {} does not exist'.format(os.path.join(path,i)))
+
+def clean_file_type(ext,path):
+    """Delete files of a given type in the current directory
+
+    Parameters
+    ----------
+    ext : str
+        extension of the files to delete
+    
+    path : str
+        path to the directory where we clean the output
+
+    """ 
+    for fname in os.listdir(path):
+        if fname.endswith(ext):
+            os.remove(os.path.join(path,fname))
+

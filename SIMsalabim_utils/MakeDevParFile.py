@@ -2,8 +2,10 @@
 #################### Create device_parameter file    #####################
 #######################  for SimSS and ZimT  ######### ####################
 ##########################################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import os,re,sys,shutil
 
 

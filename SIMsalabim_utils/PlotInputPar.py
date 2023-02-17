@@ -2,13 +2,15 @@
 #################### Read and get parameters from    #####################
 #################### dev_para file and command string ####################
 ##########################################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import os
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 import numpy as np
-# Import homemade package by VLC
+# Import SIMsalabim_utils
 from SIMsalabim_utils.MakeDevParFile import *
 from SIMsalabim_utils.GetInputPar import *
 

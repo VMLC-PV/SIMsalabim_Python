@@ -2,8 +2,10 @@
 #################### Read and get parameters from    #####################
 #################### dev_para file and command string ####################
 ##########################################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
 import os
 
 def GetParFromStr(str2run):

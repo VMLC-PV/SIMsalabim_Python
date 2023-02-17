@@ -1,12 +1,14 @@
 ################################################################
 ############### Function to format tVG files ###################
 ################################################################
-# by Vincent M. Le Corre
-# Package import
+# Author: Vincent M. Le Corre
+# Github: https://github.com/VMLC-PV
+
+# Import libraries
+import math,sys
 import pandas as pds
 import matplotlib.pyplot as plt
 import numpy as np 
-import math,sys
 from scipy import integrate
 
 def gaussian_pulse(t, tpulse, width, Imax):
