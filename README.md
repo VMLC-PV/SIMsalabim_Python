@@ -4,12 +4,12 @@
 Vincent M. Le Corre (Main)
 
 ## Description
-All these codes are written to be used with the open-source drift-diffusion suit written by Prof. L. Jan Anton Koster from University of Groningen. (See [GitHub repository](https://github.com/kostergroup/SIMsalabim)) They can be used to run the simulation, plot and do analysis of the output from the simulations for both steady-state with SimSS and transient with ZimT.\
-Codes can be ran on Windows and Linux. However, the running simulations in parallel is not possible on Windows yet. 
+All these codes are written to be used with the open-source drift-diffusion suit written by Prof. L. Jan Anton Koster from the University of Groningen. (See [GitHub repository](https://github.com/kostergroup/SIMsalabim)) They can be used to run the simulation, plot and do an analysis of the output from the simulations for both steady-state with SimSS and transient with ZimT.\
+Codes can be run on Windows and Linux. However, running simulations in parallel is not possible on Windows yet. 
 
 ### Example Data
 Some typical experimental data are also provided in the `Example_data` folder. This data is provided to help users get a head start when they try to reproduce their own experimental data.\
-These example files represent a good starting point if a user want to use SIMsalabim to fit their data or just simulate a typical organic or perovskite solar cell device.\
+These example files represent a good starting point if a user wants to use SIMsalabim to fit their data or just simulate a typical organic or perovskite solar cell device.\
 The data was taken from the following papers:\
 - [Energy & Environmental Science, 2020, 13, 2134-2141 ](https://doi.org/10.1039/D0EE00714E) (Example data for an organic solar cell)
 - [Solar RRL 2022, 6, 2100772 ](https://doi.org/10.1002/solr.202100772)  (Example data for a perovskite solar cell)
@@ -23,7 +23,6 @@ If you use these example data, please consider citing the corresponding papers.
         ├── Simulation_program                  # Place SIMsalabim folders here
         ├── SIMsalabim                          # Place SIMsalabim folders here, Get SIMsalabim from https://github.com/kostergroup/SIMsalabim
     └── README.md
-
 
 ## Python packages
 ### Conda
@@ -60,7 +59,7 @@ python Download_SIMsalabim.py
 ### Parallel simulations
 On Linux, you have the option to run the simulations in parallel. Sadly, not on windows (yet).
 To be able to run simulations in parallel efficiently and with any threading or multiprocessing from python we use the `parallel` from the [GNU prallel](https://www.gnu.org/software/parallel/) project.
-To install on linux run:
+To install on Linux run:
 ```
 sudo apt update
 sudo apt install parallel
@@ -73,7 +72,7 @@ To test is the installation worked by using by running the following command in 
 ```
 parallel --help
 ```
-It is also possible to use the `parmap` package to run the simualtions in parallel. To switch, use the `run_multiprocess_simu` instead of `run_parallel_simu` in the `RunSimulation` function in `/VLC_units/Simulation/RunSim.py` folder. However, this does not work on Ubuntu version 22.04 but seems to work on older versions.
+It is also possible to use the `parmap` package to run the simulations in parallel. To switch, use the `run_multiprocess_simu` instead of `run_parallel_simu` in the `RunSimulation` function in `/SIMsalabim_utils/RunSim.py` folder. However, this does not work on Ubuntu version 22.04 but seems to work on older versions.
 
 ## Citation
 Please, acknowledge the use of this work with the appropriate citation to the following paper and the repository.
@@ -93,6 +92,7 @@ year = {2022}, volume = {7}, number = {70}, pages = {3727},
 publisher = {The Open Journal}, 
 }
 ```
+
 
 
 
