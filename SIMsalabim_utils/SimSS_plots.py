@@ -16,7 +16,7 @@ from matplotlib.lines import Line2D
 from SIMsalabim_utils.GetInputPar import ReadParameterFile
 
 
-def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Jext'],xlimits=[],ylimits=[],x_unit='V',y_unit='A/m^2',absx=False,absy=False,plot_type=0,line_type = ['-'],mark='',legend=True,save_fig=False,fig_name='JV.jpg',verbose=True):
+def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,ax=None,x='Vext',y=['Jext'],xlimits=[],ylimits=[],x_unit='V',y_unit='A/m^2',absx=False,absy=False,plot_type=0,line_type = ['-'],mark='',legend=True,show_fig=True,save_fig=False,fig_name='JV.jpg',verbose=True):
     """ Make JV_plot for SIMsalabim 
     Either from a list of JV files or from a dataframe containing JV data 
     
@@ -36,6 +36,9 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
 
     num_fig : int
         number of the fig to plot JV, by default 0.
+    
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        axes to plot JV, by default None.
 
     x : str, optional
         xaxis data  (default = 'Vext'), by default 'Vext'
@@ -73,6 +76,9 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
 
     legend : bool, optional
         Display legend or not, by default True
+    
+    show_fig : bool, optional
+        If True, show the figure, by default True
 
     save_fig : bool, optional
         If True, save JV as an image with the  file name defined by "fig_name", by default False
@@ -82,6 +88,12 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
     
     verbose : bool, optional
         If True, print some information, by default True
+    
+    Returns
+    -------
+    ax : matplotlib.axes._subplots.AxesSubplot
+        axes where the JV is plotted.
+
     """    
 
     if JV_files is None and data is None:
@@ -95,9 +107,10 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
         for counter, value in enumerate(y):
             line_type.append('-')
 
+    if ax is None:
+        plt.figure(num_fig)
+        ax = plt.axes()
     
-    plt.figure(num_fig)
-    ax_JVs_plot = plt.axes()
     
     # Convert in x-axis
     if x_unit == 'mV':
@@ -145,7 +158,7 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
                     yplot = np.abs(data_JV[i])
                 else:
                     yplot = data_JV[i]
-                ax_JVs_plot.plot(xplot/xunit_fact,yplot/yunit_fact,color=c,label=lab,linestyle=line,marker=mark,markeredgecolor=c,markersize=10,markerfacecolor='None',markeredgewidth = 3)  
+                ax.plot(xplot/xunit_fact,yplot/yunit_fact,color=c,label=lab,linestyle=line,marker=mark,markeredgecolor=c,markersize=10,markerfacecolor='None',markeredgewidth = 3)  
     elif data_type == 1:
         data_JV = JV_files # load data
         for i,line in zip(y,line_type):
@@ -157,18 +170,18 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
                 yplot = np.abs(data_JV[i])
             else:
                 yplot = data_JV[i]
-            ax_JVs_plot.plot(xplot/xunit_fact,yplot/yunit_fact,color=colors,label=labels,linestyle=line,marker=mark,markeredgecolor=colors,markersize=10,markerfacecolor='None',markeredgewidth = 3)
+            ax.plot(xplot/xunit_fact,yplot/yunit_fact,color=colors,label=labels,linestyle=line,marker=mark,markeredgecolor=colors,markersize=10,markerfacecolor='None',markeredgewidth = 3)
     else:
         raise ValueError('Invalid data_type. It can be 0 or 1')
 
     # Plot settings
     if plot_type == 1:
-        ax_JVs_plot.set_xscale('log')
+        ax.set_xscale('log')
     elif plot_type == 2:
-        ax_JVs_plot.set_yscale('log')
+        ax.set_yscale('log')
     elif plot_type == 3:
-        ax_JVs_plot.set_xscale('log')
-        ax_JVs_plot.set_yscale('log')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
     else:
         pass
 
@@ -189,8 +202,13 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,x='Vext',y=['Je
     # Save figure
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
+    
+    if show_fig:
+        plt.show()
+    
+    return ax
 
-def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabel='PCE [%]',norm_plot=True,norm_factor=0,legend='',num_fig=5,plot_type=0,xlimits=[],ylimits=[],save_fig=True,fig_name='JV_perf.png',mark='o',line_type = ['-'],verbose=True):
+def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabel='PCE [%]',norm_plot=True,norm_factor=0,legend='',num_fig=5,ax=None,plot_type=0,xlimits=[],ylimits=[],show_fig=True,save_fig=True,fig_name='JV_perf.png',mark='o',line_type = ['-'],verbose=True):
     """Plot the performance of the JV curve from the scPars files
 
     Parameters
@@ -228,6 +246,9 @@ def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabe
     num_fig : int, optional
         number of the fig to plot, by default 5
 
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        axis to plot, by default None
+
     plot_type : int, optional
         type of plot 1 = logx, 2 = logy, 3 = loglog else linlin (default = linlin), by default 0, by default 0
 
@@ -236,6 +257,9 @@ def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabe
 
     ylimits : list, optional
         y axis limits if = [] it lets python chose limits, by default []
+    
+    show_fig : bool, optional
+        If True, show figure, by default True
 
     save_fig : bool, optional
         If True, save density plot as an image with the  file name defined by "fig_name", by default False
@@ -252,6 +276,12 @@ def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabe
     
     verbose : bool, optional
         If True, print some information, by default True
+    
+    Returns
+    -------
+    matplotlib.axes._subplots.AxesSubplot
+        axis with the plot
+
     """    
 
     perf_lst = []
@@ -282,8 +312,11 @@ def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabe
             pass
     else:
         norm_factor = 1
-    plt.figure(num_fig)
-    ax = plt.axes()
+
+    if ax == None: # if no axis is given create a new one
+        plt.figure(num_fig)
+        ax = plt.axes()
+
     ax.plot(x,perfs[y]/norm_factor,mark,color=color,label=legend,linestyle=line_type[0])
 
 
@@ -312,8 +345,17 @@ def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabe
     plt.grid(b=True,which='both')
     plt.tight_layout()
 
+    # Save figure
+    if save_fig:
+        plt.savefig(fig_name,dpi=300,transparent=True)
+    
+    if show_fig:
+        plt.show()
 
-def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x_unit='nm',Background_color=True,show_axis=True,legend=True,fig_name='energy_diagram.jpg',save_fig=False,verbose=True):
+    return ax
+
+
+def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,ax=None,Vext='nan',x_unit='nm',Background_color=True,show_axis=True,legend=True,fig_name='energy_diagram.jpg',show_fig=True,save_fig=False,verbose=True):
     """"Make energy diagram plot from Var_file output SimSS
 
     Parameters
@@ -332,6 +374,9 @@ def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x
 
     num_fig : int
         number of the fig to plot JV, by default 0.
+    
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        axis to plot, by default None
 
     Vext : float
         float to define the voltage at which the densities will be plotted if Vext='nan' then take Vext as max(Vext), if Vext does not exist we plot the closest voltage, default 'nan'
@@ -347,6 +392,9 @@ def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x
 
     legend : bool, optional
         Display legend or not, by default True
+    
+    show_fig : bool, optional
+        If True, show figure, by default True
 
     fig_name : str
         name of the file where the figure is saved, default 'energy_diagram.jpg'
@@ -356,6 +404,13 @@ def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x
     
     verbose : bool, optional
         If True, print some information, by default True
+    
+    Returns
+    -------
+    matplotlib.axes._subplots.AxesSubplot
+        axis with the plot
+
+
     """    
     
     line_thick = 1
@@ -385,8 +440,9 @@ def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x
         xaxis_label = 'x [m]'
 
     # Plotting
-    plt.figure(num_fig)
-    ax_nrj_diag = plt.axes()
+    if ax == None: # if no axis is given create a new one
+        plt.figure(num_fig)
+        ax = plt.axes()
 
     if colors == []:
         colors = ['k']
@@ -412,11 +468,11 @@ def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x
 
 
         data_Var['x'] = data_Var['x']*xunit_fact
-        # ax_nrj_diag.plot('x','Evac',data=data_Var,label = r'E$_{vac}$',linestyle='-',linewidth=2,color = 'k')
-        ax_nrj_diag.plot('x','Ec',data=data_Var,label = r'E$_{c}$',linestyle='-', linewidth=line_thick,color = c)
-        ax_nrj_diag.plot('x','Ev',data=data_Var,label = r'E$_{v}$',linestyle='-', linewidth=line_thick,color = c)
-        ax_nrj_diag.plot('x','phin',data=data_Var,label = r'E$_{fn}$',linestyle='--',linewidth=line_thick,color = c)
-        ax_nrj_diag.plot('x','phip',data=data_Var,label = r'E$_{fp}$',linestyle='--',linewidth=line_thick,color = c)
+        # ax.plot('x','Evac',data=data_Var,label = r'E$_{vac}$',linestyle='-',linewidth=2,color = 'k')
+        ax.plot('x','Ec',data=data_Var,label = r'E$_{c}$',linestyle='-', linewidth=line_thick,color = c)
+        ax.plot('x','Ev',data=data_Var,label = r'E$_{v}$',linestyle='-', linewidth=line_thick,color = c)
+        ax.plot('x','phin',data=data_Var,label = r'E$_{fn}$',linestyle='--',linewidth=line_thick,color = c)
+        ax.plot('x','phip',data=data_Var,label = r'E$_{fp}$',linestyle='--',linewidth=line_thick,color = c)
 
     if Background_color:
         # Get the thickness of the transport layers
@@ -428,42 +484,47 @@ def PlotNrjDiagSimSS(Var_files,labels,path2simu,colors=[],num_fig=0,Vext='nan',x
         TL_right = data_Var[data_Var['x']>max(data_Var['x'])-L_RTL]
         AL = data_Var[data_Var['x']<max(data_Var['x'])-L_RTL]
         AL = AL[AL['x']>L_LTL]
-        ax_nrj_diag.fill_between(TL_left['x'],TL_left['Ec'],y2=0,color=color_nTL)
-        ax_nrj_diag.fill_between(TL_left['x'],TL_left['Ev'],y2=-8,color=color_nTL)
-        ax_nrj_diag.fill_between(TL_right['x'],TL_right['Ec'],y2=0,color=color_pTL)
-        ax_nrj_diag.fill_between(TL_right['x'],TL_right['Ev'],y2=-8,color=color_pTL)
-        ax_nrj_diag.fill_between(AL['x'],AL['Ec'],y2=0,color=color_pero)
-        ax_nrj_diag.fill_between(AL['x'],AL['Ev'],y2=-8,color=color_pero)
-        ax_nrj_diag.plot([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],color='k')
-        ax_nrj_diag.plot([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],color='k')
-        ax_nrj_diag.fill_between([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],y2=-8,color=color_electrode)
-        ax_nrj_diag.fill_between([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],y2=-8,color=color_electrode)
+        ax.fill_between(TL_left['x'],TL_left['Ec'],y2=0,color=color_nTL)
+        ax.fill_between(TL_left['x'],TL_left['Ev'],y2=-8,color=color_nTL)
+        ax.fill_between(TL_right['x'],TL_right['Ec'],y2=0,color=color_pTL)
+        ax.fill_between(TL_right['x'],TL_right['Ev'],y2=-8,color=color_pTL)
+        ax.fill_between(AL['x'],AL['Ec'],y2=0,color=color_pero)
+        ax.fill_between(AL['x'],AL['Ev'],y2=-8,color=color_pero)
+        ax.plot([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],color='k')
+        ax.plot([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],color='k')
+        ax.fill_between([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],y2=-8,color=color_electrode)
+        ax.fill_between([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],y2=-8,color=color_electrode)
 
 
     # Hide axis and spines
     if show_axis:
-        ax_nrj_diag.get_xaxis().set_visible(True)
-        ax_nrj_diag.get_yaxis().set_visible(True)
-        ax_nrj_diag.set_xlabel(xaxis_label)
-        ax_nrj_diag.set_ylabel(r'Energy [eV]')
+        ax.get_xaxis().set_visible(True)
+        ax.get_yaxis().set_visible(True)
+        ax.set_xlabel(xaxis_label)
+        ax.set_ylabel(r'Energy [eV]')
     else :
-        ax_nrj_diag.get_xaxis().set_visible(False)
-        ax_nrj_diag.get_yaxis().set_visible(False)
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
         for sides in ['right','left','top','bottom']:
-            ax_nrj_diag.spines[sides].set_visible(False)
+            ax.spines[sides].set_visible(False)
         
 
     # Legend
     if legend:
         legend_elements = [Line2D([0], [0], color='k', linewidth=line_thick, label='E$_{c}$,E$_{v}$',linestyle='-'),Line2D([0], [0], color='k', linewidth=line_thick, label='E$_{c}$,E$_{v}$',linestyle='--')]
-        ax_nrj_diag.legend(handles=legend_elements,loc='upper center',frameon=False,ncol = 2)
+        ax.legend(handles=legend_elements,loc='upper center',frameon=False,ncol = 2)
     plt.tight_layout()
 
     # Save file
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
+    
+    if show_fig:
+        plt.show()
 
-def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,time='nan',x_unit='nm',Background_color=True,show_axis=True,legend=True,fig_name='energy_diagram.jpg',save_fig=False,verbose=True):
+    return ax
+
+def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,ax=None,time='nan',x_unit='nm',Background_color=True,show_axis=True,legend=True,show_fig=True,fig_name='energy_diagram.jpg',save_fig=False,verbose=True):
     """"Make energy diagram plot from Var_file output SimSS
 
     Parameters
@@ -482,6 +543,9 @@ def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,time='nan
 
     num_fig : int
         number of the fig to plot JV, by default 0.
+    
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        axis to plot the JV, by default None.
 
     time : float
         float to define the time at which the densities will be plotted if time='nan' then take time as max(time), if time does not exist we plot the closest time, default 'nan'
@@ -497,6 +561,9 @@ def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,time='nan
 
     legend : bool, optional
         Display legend or not, by default True
+    
+    show_fig : bool, optional
+        If True, show the figure, default True
 
     fig_name : str
         name of the file where the figure is saved, default 'energy_diagram.jpg'
@@ -535,8 +602,9 @@ def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,time='nan
         xaxis_label = 'x [m]'
 
     # Plotting
-    plt.figure(num_fig)
-    ax_nrj_diag = plt.axes()
+    if ax == None:
+        plt.figure(num_fig)
+        ax = plt.axes()
 
     if colors == []:
         colors = ['k']
@@ -562,11 +630,11 @@ def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,time='nan
 
 
         data_Var['x'] = data_Var['x']*xunit_fact
-        # ax_nrj_diag.plot('x','Evac',data=data_Var,label = r'E$_{vac}$',linestyle='-',linewidth=2,color = 'k')
-        ax_nrj_diag.plot('x','Ec',data=data_Var,label = r'E$_{c}$',linestyle='-', linewidth=line_thick,color = c)
-        ax_nrj_diag.plot('x','Ev',data=data_Var,label = r'E$_{v}$',linestyle='-', linewidth=line_thick,color = c)
-        ax_nrj_diag.plot('x','phin',data=data_Var,label = r'E$_{fn}$',linestyle='--',linewidth=line_thick,color = c)
-        ax_nrj_diag.plot('x','phip',data=data_Var,label = r'E$_{fp}$',linestyle='--',linewidth=line_thick,color = c)
+        # ax.plot('x','Evac',data=data_Var,label = r'E$_{vac}$',linestyle='-',linewidth=2,color = 'k')
+        ax.plot('x','Ec',data=data_Var,label = r'E$_{c}$',linestyle='-', linewidth=line_thick,color = c)
+        ax.plot('x','Ev',data=data_Var,label = r'E$_{v}$',linestyle='-', linewidth=line_thick,color = c)
+        ax.plot('x','phin',data=data_Var,label = r'E$_{fn}$',linestyle='--',linewidth=line_thick,color = c)
+        ax.plot('x','phip',data=data_Var,label = r'E$_{fp}$',linestyle='--',linewidth=line_thick,color = c)
 
     if Background_color:
         # Get the thickness of the transport layers
@@ -578,42 +646,44 @@ def PlotNrjDiagWithTime(Var_files,labels,path2simu,colors=[],num_fig=0,time='nan
         TL_right = data_Var[data_Var['x']>max(data_Var['x'])-L_RTL]
         AL = data_Var[data_Var['x']<max(data_Var['x'])-L_RTL]
         AL = AL[AL['x']>L_LTL]
-        ax_nrj_diag.fill_between(TL_left['x'],TL_left['Ec'],y2=0,color=color_nTL)
-        ax_nrj_diag.fill_between(TL_left['x'],TL_left['Ev'],y2=-8,color=color_nTL)
-        ax_nrj_diag.fill_between(TL_right['x'],TL_right['Ec'],y2=0,color=color_pTL)
-        ax_nrj_diag.fill_between(TL_right['x'],TL_right['Ev'],y2=-8,color=color_pTL)
-        ax_nrj_diag.fill_between(AL['x'],AL['Ec'],y2=0,color=color_pero)
-        ax_nrj_diag.fill_between(AL['x'],AL['Ev'],y2=-8,color=color_pero)
-        ax_nrj_diag.plot([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],color='k')
-        ax_nrj_diag.plot([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],color='k')
-        ax_nrj_diag.fill_between([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],y2=-8,color=color_electrode)
-        ax_nrj_diag.fill_between([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],y2=-8,color=color_electrode)
+        ax.fill_between(TL_left['x'],TL_left['Ec'],y2=0,color=color_nTL)
+        ax.fill_between(TL_left['x'],TL_left['Ev'],y2=-8,color=color_nTL)
+        ax.fill_between(TL_right['x'],TL_right['Ec'],y2=0,color=color_pTL)
+        ax.fill_between(TL_right['x'],TL_right['Ev'],y2=-8,color=color_pTL)
+        ax.fill_between(AL['x'],AL['Ec'],y2=0,color=color_pero)
+        ax.fill_between(AL['x'],AL['Ev'],y2=-8,color=color_pero)
+        ax.plot([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],color='k')
+        ax.plot([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],color='k')
+        ax.fill_between([-10,0],[min(data_Var['phin']),min(data_Var['phin'])],y2=-8,color=color_electrode)
+        ax.fill_between([max(data_Var['x']),max(data_Var['x'])+10],[max(data_Var['phip']),max(data_Var['phip'])],y2=-8,color=color_electrode)
 
 
     # Hide axis and spines
     if show_axis:
-        ax_nrj_diag.get_xaxis().set_visible(True)
-        ax_nrj_diag.get_yaxis().set_visible(True)
-        ax_nrj_diag.set_xlabel(xaxis_label)
-        ax_nrj_diag.set_ylabel(r'Energy [eV]')
+        ax.get_xaxis().set_visible(True)
+        ax.get_yaxis().set_visible(True)
+        ax.set_xlabel(xaxis_label)
+        ax.set_ylabel(r'Energy [eV]')
     else :
-        ax_nrj_diag.get_xaxis().set_visible(False)
-        ax_nrj_diag.get_yaxis().set_visible(False)
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
         for sides in ['right','left','top','bottom']:
-            ax_nrj_diag.spines[sides].set_visible(False)
+            ax.spines[sides].set_visible(False)
         
 
     # Legend
     if legend:
         legend_elements = [Line2D([0], [0], color='k', linewidth=line_thick, label='E$_{c}$,E$_{v}$',linestyle='-'),Line2D([0], [0], color='k', linewidth=line_thick, label='E$_{c}$,E$_{v}$',linestyle='--')]
-        ax_nrj_diag.legend(handles=legend_elements,loc='upper center',frameon=False,ncol = 2)
+        ax.legend(handles=legend_elements,loc='upper center',frameon=False,ncol = 2)
     plt.tight_layout()
 
     # Save file
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
+    
+    return ax
 
-def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],xlimits=[],ylimits=[],x_unit='nm',y_unit='cm^-3',plot_type=0,colorbar_type='None',colorbar_display=False,line_type = ['-','--'],legend=True,save_fig=False,fig_name='density.jpg',verbose=True):
+def PlotDensSimSS(Var_files,labels,colors=[],ax=None,num_fig=0,Vext=['nan'],y=['n','p'],xlimits=[],ylimits=[],x_unit='nm',y_unit='cm^-3',plot_type=0,colorbar_type='None',colorbar_display=False,line_type = ['-','--'],legend=True,show_fig=True,save_fig=False,fig_name='density.jpg',verbose=True):
     """Make Var_plot for SIMsalabim
 
     Parameters
@@ -626,6 +696,9 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
     
     colors : list, optional
         List of colors for the Var_files, by default [].
+    
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        Axes to plot on, by default None.
 
     num_fig : int
         number of the fig to plot JV
@@ -673,6 +746,9 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
     legend : bool, optional
         Display legend or not, by default True
 
+    show_fig : bool, optional
+        Display figure or not, by default True
+
     save_fig : bool, optional
         If True, save density plot as an image with the  file name defined by "fig_name", by default False
 
@@ -681,6 +757,11 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
     
     verbose : bool, optional
         If True, print some information, by default True
+    
+    Returns
+    -------
+    ax : matplotlib.axes._subplots.AxesSubplot
+        Axes where the plot is made.
     """    
     
     if len(y) > len(line_type):
@@ -737,8 +818,9 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
         if verbose:
             print('Line color is set with Var_file name.')
     
-    plt.figure(num_fig)
-    ax_Vars_plot = plt.axes()
+    if ax is None:
+        plt.figure(num_fig)
+        ax = plt.axes()
 
     for Var,lab,c in zip(Var_files,labels,itertools.cycle(colors)):
             
@@ -800,7 +882,7 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
                 else:
                     lab = ''
 
-                ax_Vars_plot.plot(data_Var_dum['x']*xunit_fact,data_Var_dum[i]/yunit_fact,color=colorline,label=lab,linestyle=line)
+                ax.plot(data_Var_dum['x']*xunit_fact,data_Var_dum[i]/yunit_fact,color=colorline,label=lab,linestyle=line)
             
     
     # legend
@@ -814,12 +896,12 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
 
     # Plot settings
     if plot_type == 1:
-        ax_Vars_plot.set_xscale('log')
+        ax.set_xscale('log')
     elif plot_type == 2:
-        ax_Vars_plot.set_yscale('log')
+        ax.set_yscale('log')
     elif plot_type == 3:
-        ax_Vars_plot.set_xscale('log')
-        ax_Vars_plot.set_yscale('log')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
     else:
         pass
 
@@ -853,7 +935,12 @@ def PlotDensSimSS(Var_files,labels,colors=[],num_fig=0,Vext=['nan'],y=['n','p'],
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
 
-def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p'],xlimits=[],ylimits=[],x_unit='s',y_unit='cm^-3', t_unit='s',plot_type=0,colorbar_type='None',colorbar_display=False,line_type = ['-','--'],legend=True,save_fig=False,fig_name='density.jpg',verbose=True):
+    if show_fig:
+        plt.show()
+    
+    return ax
+
+def PlotDensWithTime(Var_files,labels,colors=[],ax=None,num_fig=0,time=['nan'],y=['n','p'],xlimits=[],ylimits=[],x_unit='s',y_unit='cm^-3', t_unit='s',plot_type=0,colorbar_type='None',colorbar_display=False,line_type = ['-','--'],legend=True,show_fig=True,save_fig=False,fig_name='density.jpg',verbose=True):
     """Make Var_plot for SIMsalabim
 
     Parameters
@@ -866,6 +953,9 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
     
     colors : list, optional
         List of colors for the Var_files, by default [].
+    
+    ax : matplotlib.axes._subplots.AxesSubplot, optional
+        ax to plot on, by default None.
 
     num_fig : int
         number of the fig to plot JV
@@ -915,6 +1005,9 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
 
     legend : bool, optional
         Display legend or not, by default True
+    
+    show_fig : bool, optional
+        If True, show figure, by default True
 
     save_fig : bool, optional
         If True, save density plot as an image with the  file name defined by "fig_name", by default False
@@ -924,6 +1017,11 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
     
     verbose : bool, optional
         If True, print some information, by default True
+    
+    Returns
+    -------
+    ax : matplotlib.axes._subplots.AxesSubplot
+        ax where the plot is done
     """    
     
     if len(y) > len(line_type):
@@ -1039,8 +1137,9 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
             if verbose:
                 print('Wrong colorbar_type input')
 
-        plt.figure(num_fig)
-        ax_Vars_plot = plt.axes()
+        if ax is None:
+            plt.figure(num_fig)
+            ax = plt.axes()
 
         for t in time:
             data_Var_dum = data_Var[abs(data_Var.time -t) == min(abs(data_Var.time -t))]
@@ -1063,7 +1162,7 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
                 else:
                     lab = ''
 
-                ax_Vars_plot.plot(data_Var_dum['x']*xunit_fact,data_Var_dum[i]/yunit_fact,color=colorline,label=lab,linestyle=line)
+                ax.plot(data_Var_dum['x']*xunit_fact,data_Var_dum[i]/yunit_fact,color=colorline,label=lab,linestyle=line)
             
     
     # legend
@@ -1077,12 +1176,12 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
 
     # Plot settings
     if plot_type == 1:
-        ax_Vars_plot.set_xscale('log')
+        ax.set_xscale('log')
     elif plot_type == 2:
-        ax_Vars_plot.set_yscale('log')
+        ax.set_yscale('log')
     elif plot_type == 3:
-        ax_Vars_plot.set_xscale('log')
-        ax_Vars_plot.set_yscale('log')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
     else:
         pass
 
@@ -1115,3 +1214,5 @@ def PlotDensWithTime(Var_files,labels,colors=[],num_fig=0,time=['nan'],y=['n','p
     plt.tight_layout()
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
+    
+    return ax
