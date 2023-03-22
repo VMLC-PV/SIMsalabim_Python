@@ -85,7 +85,7 @@ M. Koopmans, V.M. Le Corre, and L.J.A. Koster, SIMsalabim: An open-source drift-
 @article{Koopmans2022, 
 author = {Marten Koopmans and Vincent M. Le Corre and L. Jan Anton Koster}, 
 title = {`SIMsalabim`: An open-source drift-diffusion simulator for semiconductor devices}, 
-journal = {Journal of Open Source Software} },
+journal = {Journal of Open Source Software},
 doi = {10.21105/joss.03727}, 
 url = {https://doi.org/10.21105/joss.03727}, 
 year = {2022}, volume = {7}, number = {70}, pages = {3727}, 
