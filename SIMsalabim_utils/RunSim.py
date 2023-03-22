@@ -16,7 +16,6 @@ from matplotlib.legend import Legend
 from SIMsalabim_utils.CompileProg import *
 
 
-
 def run_code(name_prog,path2prog,str2run='',show_term_output=False,verbose=False):
     """Run program 'name_prog' in the folder specified by 'path2prog'.
 
@@ -60,9 +59,15 @@ def run_code(name_prog,path2prog,str2run='',show_term_output=False,verbose=False
             fpc_prog(name_prog,path2prog,show_term_output=False,force_fpc=False,verbose=verbose)
     else : 
         # cmd_list = './'+name_prog+' ' + str2run
+        curr_dir = os.getcwd()                      # Get current directory
+        os.chdir(path2prog)                         # Change directory to working directory
         cmd_list = './'+name_prog.lower()+' ' + str2run
-        if not os.path.isfile('./'+path2prog+'\\'+name_prog.lower()):
+        print('Compiling '+name_prog+' in '+path2prog)
+        if not os.path.isfile('./'+name_prog.lower()):
+            print('Compiling '+name_prog+' in '+path2prog)
             fpc_prog(name_prog,path2prog,show_term_output=False,force_fpc=False,verbose=verbose)
+        os.chdir(curr_dir)                          # Change directory back to original directory
+
     try:
         subprocess.check_call(cmd_list.split(), encoding='utf8', stdout=output_direct, cwd=path2prog, shell=is_windows)
     except subprocess.CalledProcessError as e:
@@ -77,6 +82,7 @@ def run_code(name_prog,path2prog,str2run='',show_term_output=False,verbose=False
         # raise ChildProcessError
         
     os.chdir(curr_dir)                          # Change directory back to original directory
+
 
 
 
@@ -104,6 +110,7 @@ def run_multiprocess_simu(prog2run,code_name_lst,path_lst,str_lst,max_jobs=max(1
     results = parmap.starmap(prog2run,list(zip(code_name_lst,path_lst,str_lst)), pm_pool=p, pm_processes=max_jobs,pm_pbar=True)
     p.close()
     p.join()
+
 
 
 def run_parallel_simu(code_name_lst,path_lst,str_lst,max_jobs=max(1,os.cpu_count()-1),verbose=False):
@@ -139,23 +146,34 @@ def run_parallel_simu(code_name_lst,path_lst,str_lst,max_jobs=max(1,os.cpu_count
     path2prog = path_lst[0]
     
     filename = 'Str4Parallel_'+str(uuid.uuid4())+'.txt'
-    tempfilepar = open(os.path.join(path2prog,filename),'w')
-    for idx,val in enumerate(str_lst):
+    # tempfilepar = open(os.path.join(path2prog,filename),'w')
+    with open(os.path.join(path2prog,filename),'w') as tempfilepar:
+        for idx,val in enumerate(str_lst):
 
-        str_lst[idx] = './'+code_name_lst[idx].lower() + ' ' + str_lst[idx]
-        tempfilepar.write(str_lst[idx] + "\n")
+            str_lst[idx] = './'+code_name_lst[idx].lower() + ' ' + str_lst[idx]
+            tempfilepar.write(str_lst[idx] + "\n")
     # print(str_lst)
-    tempfilepar.close()
+    # tempfilepar.close()
+    
     curr_dir = os.getcwd()                      # Get current directory
-    # os.chdir(path2prog)                         # Change directory to working directory
+    os.chdir(path2prog)                         # Change directory to working directory
     log_file = os.path.join(path2prog,'logjob_'+str(uuid.uuid4()) + '.dat')
     cmd_str = 'parallel --joblog '+ log_file +' --jobs '+str(int(max_jobs))+' --bar -a '+os.path.join(path2prog,filename)
+   
+    if verbose:
+        stdout = None
+        stderr = None
+    else:
+        stdout = subprocess.DEVNULL
+        stderr = subprocess.DEVNULL
     try:
-        subprocess.check_call(cmd_str.split(), encoding='utf8', cwd=path2prog, stdout=verbose)
+        subprocess.run(cmd_str.split(), stdout=stdout, stderr=stdout)
+        # subprocess.check_call(cmd_str.split(), encoding='utf8', cwd=path2prog, stdout=verbose) # use to run but now does not, no idea why
+        # os.system("your_command") # also an option
     except subprocess.CalledProcessError as e:
         #don't stop if error code is 95
         if e.returncode != 0:
-            log = pd.read_csv(log_file,sep='\t',usecols=['Exitval'],error_bad_lines=False)#on_bad_lines=warn)
+            log = pd.read_csv(log_file,sep='\t',usecols=['Exitval'],error_bad_lines=False)
             if log['Exitval'].isin([0, 95]).all():
                 os.remove(log_file)
                 if verbose:
@@ -163,13 +181,9 @@ def run_parallel_simu(code_name_lst,path_lst,str_lst,max_jobs=max(1,os.cpu_count
             else:
                 print(log['Exitval'])
                 raise e
-            
-            
-        # check if all errors are either 95 or 0
-            
 
-    # subprocess.check_call( cmd_str.split() , encoding='utf8', cwd=path2prog, stdout=verbose)
-    # os.chdir(curr_dir)                          # Change directory back to original directory
+    os.chdir(curr_dir)                          # Change directory back to original directory
+
 
 
 

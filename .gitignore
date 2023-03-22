@@ -17,3 +17,4 @@
 !Notebooks/*.ipynb
 !Example_Data/OPV_Examples/EES_Data/*txt
 !Example_Data/Perovskite_Examples/Solar_RRL_Data/*dat
+!requirements.txt

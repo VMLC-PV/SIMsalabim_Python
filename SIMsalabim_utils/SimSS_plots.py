@@ -196,7 +196,7 @@ def PlotJV(JV_files,labels=None,data_type=0,colors= [],num_fig=0,ax=None,x='Vext
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.tight_layout()
 
     # Save figure
@@ -342,7 +342,7 @@ def PlotJVPerf(x,scPars_files,y='PCE',Gfrac=[],color='b',xlabel='Time [s]',ylabe
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.tight_layout()
 
     # Save figure
@@ -930,7 +930,7 @@ def PlotDensSimSS(Var_files,labels,colors=[],ax=None,num_fig=0,Vext=['nan'],y=['
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.tight_layout()
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
@@ -1210,7 +1210,7 @@ def PlotDensWithTime(Var_files,labels,colors=[],ax=None,num_fig=0,time=['nan'],y
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.tight_layout()
     if save_fig:
         plt.savefig(fig_name,dpi=300,transparent=True)
