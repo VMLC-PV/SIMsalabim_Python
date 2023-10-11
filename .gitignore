@@ -9,12 +9,13 @@
 *__pycache__
 *.h5
 *.gif
-*SIMsalabim
 *.pyc
 *.ipynb
+*SIMsalabim
 
 # Exceptions
 !Notebooks/*.ipynb
 !Example_Data/OPV_Examples/EES_Data/*txt
 !Example_Data/Perovskite_Examples/Solar_RRL_Data/*dat
+!Example_Data/Perovskite_Examples/trPL/device_parameters.txt
 !requirements.txt

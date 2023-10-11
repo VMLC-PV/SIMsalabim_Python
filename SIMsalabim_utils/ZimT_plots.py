@@ -97,7 +97,7 @@ def zimt_tj_plot(num_fig,data_tj,x='t',y=['Jext'],xlimits=[],ylimits=[],plot_typ
     if ylimits != []:
         plt.ylim(ylimits)
 
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.xlabel('Time [s]')
     plt.ylabel('Current Density [mA cm$^{-2}$]')
     plt.tight_layout()
@@ -183,7 +183,7 @@ def zimt_tj_JV_plot(num_fig,data_tj,x='Vext',y=['Jext'],xlimits=[],ylimits=[],pl
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.xlabel('Voltage [V]')
     plt.ylabel('Current Density [mA cm$^{-2}$]')
     plt.tight_layout()
@@ -270,7 +270,7 @@ def zimt_Voltage_transient_plot(num_fig,data_tj,x='t',y=['Vext'],xlimits=[],ylim
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     plt.xlabel('Time [s]')
     plt.ylabel('Volatge [V]')
     plt.tight_layout()
@@ -444,7 +444,7 @@ def zimt_dens_plot(num_fig,data_Var,time=['nan'],y=['n','p'],xlimits=[],ylimits=
         plt.xlim(xlimits)
     if ylimits != []:
         plt.ylim(ylimits)
-    plt.grid(b=True,which='both')
+    plt.grid(visible=True,which='both')
     
     # Label x-axis
     if x_unit == 'nm':
