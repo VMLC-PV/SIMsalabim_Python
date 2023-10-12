@@ -33,8 +33,8 @@ gamma_n = 0                             * (m/V)^0.5, field dependence of mob, Po
 gamma_p = 0                             * (m/V)^0.5, field dependence of mob, Poole-Frenkel form
 
 **Contacts**************************************************************************
-W_L = 4.63                               * eV, work function left electrode (= cathode)
-W_R = 4.63                               * eV, work function right electrode (= anode)
+W_L = 4.7                               * eV, work function left electrode (= cathode)
+W_R = 4.7                               * eV, work function right electrode (= anode)
 Sn_L = -1e-7                            * m/s, surface recombination of electrons at the left electrode
 Sp_L = -1e-7                            * m/s, surface recombination of holes at the left electrode
 Sn_R = -1e-7                            * m/s, surface recombination of electrons at the right electrode
@@ -48,8 +48,8 @@ L_LTL = 50e-9                            * m, thickness left TL
 L_RTL = 50e-9                            * m, thickness right TL
 nk_LTL = ../Data/nk_PEDOT.txt           * name of file with n,k values of the left TL
 nk_RTL = ../Data/nk_Ca.txt              * name of file with n,k values of the right TL
-Nc_LTL = 1e26                           * m^-3, DOS of left TL
-Nc_RTL = 1e26                           * m^-3, DOS of right TL
+Nc_LTL = 2e24                           * m^-3, DOS of left TL
+Nc_RTL = 2e24                           * m^-3, DOS of right TL
 doping_LTL = -0e23                      * m^-3, doping in left TL
                                         * if >0 p-type doping if <0 n-type doping
 doping_RTL = 0e23                       * m^-3, doping in right TL
@@ -60,10 +60,10 @@ nu_int_LTL = 1e-4                       * m/s, interface transfer velocity, left
 nu_int_RTL = 1e-4                       * m/s, interface transfer velocity, right TL
 eps_r_LTL = 1                         * relative dielectric constant left TL
 eps_r_RTL = 5                         * relative dielectric constant right TL
-CB_LTL = 3.4                            * eV, conduction band left TL
-CB_RTL = 3.4                              * eV, conduction band right TL
-VB_LTL = 6                            * eV, valence band left TL
-VB_RTL = 6                              * eV, valence band right TL
+CB_LTL = 2.5                            * eV, conduction band left TL
+CB_RTL = 2.5                              * eV, conduction band right TL
+VB_LTL = 7                            * eV, valence band left TL
+VB_RTL = 7                              * eV, valence band right TL
 TLsGen = 0                              * TLs generate electrons/hole yes(1)/no(0), overrides profile!
 TLsTrap = 0                             * traps in TLs yes(1)/no(0)
 IonsInTLs = 0                           * can ions, if any, move into the TLs? yes(1)/no(<>1).
