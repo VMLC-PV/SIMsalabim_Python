@@ -23,7 +23,8 @@ def GetParFromStr(str2run):
     """    
 
     str2run = ' '.join(str2run.split()) #remove extra white space
-
+    # find first '-' and remove everything before
+    str2run = str2run[str2run.find('-'):]
     str2run = str2run.split()
 
     Names= str2run[::2]

@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np 
 from scipy import integrate
 
-def gaussian_pulse(t, tpulse, width, Imax):
+def gaussian_pulse(t, tpulse, FWHM, Imax):
     """Returns a gaussian pulse
 
     Parameters
@@ -20,8 +20,8 @@ def gaussian_pulse(t, tpulse, width, Imax):
         t time axis (unit: s)
     tpulse : float
         tpulse center of the pulse (unit: s)
-    width : float
-        width of the pulse (unit: s)
+    FWHM : float
+        full width at half maximum of the pulse (unit: s)
     Imax : float
         Imax maximum of the pulse
 
@@ -30,7 +30,7 @@ def gaussian_pulse(t, tpulse, width, Imax):
     1-D sequence of floats
         Vector containing the gaussian pulse
     """    
-    return Imax *np.exp(-np.power(t - tpulse, 2.) / (2 * np.power(width, 2.)))
+    return Imax *np.exp(-np.power(t - tpulse, 2.) / (2 * np.power(FWHM/(2*np.sqrt(2*np.log(2))), 2.)))
 
 
 def zimt_light_decay(tmin,tmax,Gstart,Gfinal,Va,steps=100,trf = 20e-9,time_exp =False,tVG_name='tVG.txt'):

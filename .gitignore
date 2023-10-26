@@ -19,3 +19,5 @@
 !Example_Data/Perovskite_Examples/Solar_RRL_Data/*dat
 !Example_Data/Perovskite_Examples/trPL/device_parameters.txt
 !requirements.txt
+!SPV_Simulation.ipynb
+!SPV_Simulation_param_var.ipynb

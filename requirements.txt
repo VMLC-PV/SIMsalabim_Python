@@ -1,8 +1,11 @@
 numpy
-matplotlib
 pandas
+matplotlib
+notebook
+jupyterlab
+ipympl
+seaborn
 scipy
+parmap
 gitpython
 tk
-parmap
-notebook
